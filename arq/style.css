@@ -1,0 +1,246 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size: 14px;
+}
+
+*, *:before, *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+ }
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    background: rgb(250,250,250);
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+}
+img {
+    max-width: 100%;
+}
+.instagram_logo {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    height: 100vh;
+    width: 769px; 
+}
+
+.instagram_fone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60.5%;
+}
+
+.instagram_fone img {
+    max-width:550px;
+    max-height: 610px;
+    width: auto;
+    height: auto;
+    padding: 0.29rem;  
+}
+
+.instagram_continue {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
+    width:424px;
+    min-height: 36.5rem;
+    padding-bottom: 0;
+}
+
+.group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 10px 20px;
+    flex-direction: column; /* Isso vai fazer com que o item align passe a ser horizontal e o horizontal(justify-content), vertifcal */
+    background-color: rgb(255,255,255);/* achei lindona a cor -> #aa3333 */
+    border: 1.1px solid rgb(219,219,219);
+    width: 96.1%;
+    padding: 1rem;
+}
+
+.logo_insta {
+    height: 5rem;
+    margin: 5px 0 24px 0;
+}
+
+.login input {
+    display: block;
+    margin: 5px;
+    padding: 0.67rem;
+    background-color: rgb(250,250,250);
+    width:268.1px;
+    font-size: 13px;
+    border: 1.1px solid rgb(219,219,219);
+    border-radius: 0.2rem;
+}
+
+::-webkit-input-placeholder {
+    color:rgb(142,142,142);
+}
+
+.login input:focus {
+    border: 0 1px;
+    border-color:rgb(168,168,168);
+    outline: 0;
+}
+
+.entrar {
+    margin: 8.6px 7px 7px 7px;
+    background-color: rgb(178,223,252);
+    color: rgb(255,255,255);
+    border-radius: 0.3rem;
+    font-weight: 600;
+    border: none;
+    width:268.1px;
+    padding: 0.40rem;
+}
+
+.entrar:hover {
+    background-color: rgb(0,149,246);
+}
+
+.entrar:active {
+    border: 0 1px;
+    background-color: rgb(178,223,252);
+    outline: 0;
+}
+
+.entrar:focus {
+    outline: 0;
+    border: 0 1px;
+}
+
+.tracer_row {
+    text-align: center;
+    margin: 17px auto 35px;
+    width:268.1px;
+    height: 1.6px;
+    line-height: 1px;
+    background-color: rgb(219,219,219);
+}
+
+.ou {
+    color: rgb(142,142,142);
+    padding: 5px 15px;
+    display: inline;
+    font-weight: 600;
+    font-size: 13px;
+    background-color:rgb(255,255,255);
+    border: 3px solid #fff;
+}
+
+.entrar_com_facebook {
+    font-weight: 600;
+    margin-bottom:17px;
+}
+
+.azul_fosco{
+    color: rgb(56,81,133)
+}
+
+.azul_fosco:active {
+    color: rgb(178,223,252);
+}
+
+.logo_face {
+    width: auto;
+    height: auto;
+    max-width: 15px;
+    max-height: 15px;
+}
+
+.group2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    margin-left:20px;
+    background-color: rgb(255,255,255);
+    width: 96.1%;
+    border: 1.1px solid rgb(219,219,219);
+    padding: 1.55rem;
+}
+
+.not_account {
+    padding-right: 5px;
+}
+
+.item_blue {
+    color: rgb(0,149,246);
+    font-weight: 600;
+}
+
+.item_blue:active {
+    color: rgb(178,223,252);
+}
+
+.plataformas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;    
+    padding: 0;
+}
+
+.get_app {
+    margin-top: 8.4px;
+    text-align: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.download_plataforma {
+    display: flex;
+    flex-direction: row;
+    width: 100%; 
+    align-items: center;
+    justify-content: center;
+}
+
+.download_plataforma img:active {
+    opacity: 0.5;
+}
+
+.download_app img {
+    max-width:145px;
+    width: auto;
+    height: auto;
+    padding: 0.29rem;
+}
+
+/* media queries */
+/***********************************************************/
+/**********************************************************/
+@media (max-width: 875px){
+    .instagram_fone {
+        display: none;
+    } 
+}
+
+@media (max-width: 450px){
+    .group, .group2{
+        background-color:rgb(250,250,250) ;
+        border: 1px solid transparent;
+    }
+    .ou {
+        background-color:rgb(250,250,250) ; 
+        border: 3px solid transparent;
+    }
+    .tracer_row {
+        height: 0.5px;
+    }
+}

@@ -1,8 +1,6 @@
 from socket import socket, AF_INET, SOCK_STREAM
 from threading import Thread
 
-
-
 class Dados:
     def __init__(self, sock):
         dados = sock.recv(1024)
