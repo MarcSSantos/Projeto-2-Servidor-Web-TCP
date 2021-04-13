@@ -32,13 +32,9 @@ def servidorWebSimples():
             print(f'\nConexão estabelecida com o endereço: {endereco_cliente}')
 
             requisicao = socket_cliente.recv(1024).decode()
-            print(requisicao)
             dados_do_cabecalho = requisicao.split('\n')
-            print(dados_do_cabecalho, 'AEHOEOGHOOOOOOOOOOOOOOOOOOOOOOOOOOO')
             arquivo_nao_tratado = dados_do_cabecalho[0].split()[1].replace('/', '\\') if len(requisicao) != 0 else '/' if plataforma != 'Windows' else '\\' 
             arquivo_requisitado = arquivo_nao_tratado.replace('%20',' ') if '%20' in arquivo_nao_tratado else arquivo_nao_tratado
-
-            print(arquivo_requisitado,'DESGRACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
 
             #-- Identificando a plataforma
             sistema = platform.system()
@@ -53,10 +49,11 @@ def servidorWebSimples():
             data_e_horario = dia_atual.now().strftime(formatacao)
             #--
 
-            print(f'Reequisição do arquivo do arquivo mazelado {arquivo_requisitado}\n\n')
+            print(f'Reequisição do arquivo -> {arquivo_requisitado}\n\n')
 
             #mensagem = ''
             print(os.getcwd()+arquivo_requisitado)
+            
             cabecalho = ('HTTP/1.1 200 OK'
                          'Server: Local Teste'
                          'System: sistema versao_sistema'
