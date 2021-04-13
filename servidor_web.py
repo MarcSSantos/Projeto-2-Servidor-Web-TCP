@@ -9,9 +9,9 @@ import os
 plataforma = platform.system().title()
 
 if plataforma != 'Windows':
-    os.chdir('/c/Projeto_servidor_web/arq')
+    os.chdir('C:/Users/marcs/Documents/Redes/pro/Projeto-2-Servidor-Web-TCP')
 else:
-    os.chdir('C:\\Projeto_servidor_web\\arq')
+    os.chdir('C:\\Users\marcs\\Documents\\Redes\\pro\\Projeto-2-Servidor-Web-TCP')
     
 diretorio_atual = os.getcwd()
 print(diretorio_atual)
