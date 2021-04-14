@@ -3,15 +3,19 @@ import datetime
 import platform
 import mimetypes
 import os
-
 ###############################################
 # Digita na URL do navegador -> localhost:8080
 ###############################################
 plataforma = platform.system().title()
 
+if plataforma != 'Windows':
+    os.chdir('/c/Projeto_servidor_web/arq')
+else:
+    os.chdir('C:\\Projeto_servidor_web\\arq')
+    
 diretorio_atual = os.getcwd()
 print(diretorio_atual)
-lista_de_arquivos = os.listdir(path=diretorio_atual)
+#lista_de_arquivos = os.listdir(path=diretorio_atual)
 
 def servidorWebSimples():
     socket_servidor = socket(AF_INET, SOCK_STREAM)
@@ -44,9 +48,7 @@ def servidorWebSimples():
 
             data_e_horario = dia_atual.now().strftime(formatacao)
             #--
-            
-            
-  
+
             print(f'Reequisição do arquivo -> {arquivo_requisitado}\n\n')
 
             #mensagem = ''
@@ -63,6 +65,8 @@ def servidorWebSimples():
                          'Content-Length: 41823')
 
             if arquivo_requisitado == '\\':
+                
+                lista_de_arquivos = os.listdir(path=diretorio_atual)
 
                 mensagem = (b'HTTP/1.1 200 OK'
                             b'\r\nServer: Local Teste'
@@ -75,6 +79,7 @@ def servidorWebSimples():
                              '\r\n<html lang="pt-br">'
                              '\r\n<head>'
                              '\r\n<title>Olá, essa e uma página de testes</title>'
+                             '\r\n<link rel="icon" type="image/x-icon" href="favicon.ico">'
                              '\r\n</head>'
                              '\r\n<body>'
                              '\r\n<h1>Lista de arquivos</h1>'
@@ -85,10 +90,10 @@ def servidorWebSimples():
                              '\r\n<td> <h2 style = "text-align: center";>Data/Hora<h2> </td>'
                              '\r\n</tr>').encode()
 
-
+                
                 for arquivo in lista_de_arquivos:
                     bytes_arquivo = (os.path.getsize(arquivo))
-                    
+
                     tamanho_arquivo = f'{bytes_arquivo/1024:.2f} KB' if f'{bytes_arquivo/(1024**2):.2f}' == '0.00' else f'{bytes_arquivo/(1024**2):.2f} MB'
 
                     mensagem += (f'\r\n<tr>'
@@ -105,8 +110,9 @@ def servidorWebSimples():
                 #socket_cliente.close()
 
             else:
-                try:
+                try:                  
                     extensao = mimetypes.MimeTypes().guess_type(os.getcwd()+arquivo_requisitado)[0]
+                    print(extensao)
 
                     caract_escritos = b''
 
@@ -133,13 +139,14 @@ def servidorWebSimples():
                                 b'\r\nContent-Length: ' + bits.encode() +
                                 b'\r\nContent-Type: ' + extensao.encode() + b'; charset=utf-8\r\n\r\n')
 
+                    
                     mensagem += caract_escritos
 
                     if extensao.split('/')[0] == 'text':
                         print(mensagem.decode())
 
                     socket_cliente.send(mensagem)
-                    socket_cliente.close()
+                    #socket_cliente.close()
 
                 except FileNotFoundError:
                     mensagem = (b'HTTP/1.1 404 Not Found'
@@ -148,17 +155,17 @@ def servidorWebSimples():
                                 b'\r\nDate: ' + data_e_horario.encode() + b' UTC'
                                 b'\r\nContent-Type: text/html; charset=utf-8\r\n\r\n')
 
-                    mensagem += (b'<!DOCTYPE html>'
-                                 b'\r\n<html lang="pt-br">'
-                                 b'\r\n<head>'
-                                 b'\r\n<meta charset = "UTF-8">'
-                                 b'\r\n<title>Ola, essa e uma pagina de testes</title>'
-                                 b'\r\n</head>'
-                                 b'\r\n<body>'
-                                 b'\r\n<h1>HTTP/1.1 404 NOT FOUND</h1>'
-                                 b'\r\n<h3>File Not Found</h3>'
-                                 b'\r\n</body>'
-                                 b'\r\n</html>\r\n')
+                    mensagem += ('<!DOCTYPE html>'
+                                 '\r\n<html lang="pt-br">'
+                                 '\r\n<head>'
+                                 '\r\n<title>Olá, essa é uma página de testes</title>'
+                                 '\r\n<link rel="icon" type="image/x-icon" href="favicon.ico">'
+                                 '\r\n</head>'
+                                 '\r\n<body>'
+                                 '\r\n<h1>HTTP/1.1 404 NOT FOUND</h1>'
+                                 '\r\n<h3>File Not Found</h3>'
+                                 '\r\n</body>'
+                                 '\r\n</html>\r\n').encode()
 
                     print(mensagem.decode())
                     socket_cliente.send(mensagem)
@@ -170,8 +177,8 @@ def servidorWebSimples():
     except KeyboardInterrupt:
         print('Encerrando...')
 
-#    except Exception as exc:
-#        print(f'Erro: {Exception}{exc}')
+    except Exception as exc:
+        print(f'Erro: {Exception}{exc}')
 
     socket_servidor.close()
 
