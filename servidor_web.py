@@ -3,12 +3,12 @@ import datetime
 import platform
 import mimetypes
 import os
+
 ###############################################
 # Digita na URL do navegador -> localhost:8080
 ###############################################
 plataforma = platform.system().title()
 
-   
 diretorio_atual = os.getcwd()
 print(diretorio_atual)
 lista_de_arquivos = os.listdir(path=diretorio_atual)
@@ -44,7 +44,9 @@ def servidorWebSimples():
 
             data_e_horario = dia_atual.now().strftime(formatacao)
             #--
-
+            
+            
+  
             print(f'Reequisição do arquivo -> {arquivo_requisitado}\n\n')
 
             #mensagem = ''
@@ -86,7 +88,7 @@ def servidorWebSimples():
 
                 for arquivo in lista_de_arquivos:
                     bytes_arquivo = (os.path.getsize(arquivo))
-
+                    
                     tamanho_arquivo = f'{bytes_arquivo/1024:.2f} KB' if f'{bytes_arquivo/(1024**2):.2f}' == '0.00' else f'{bytes_arquivo/(1024**2):.2f} MB'
 
                     mensagem += (f'\r\n<tr>'
@@ -137,7 +139,7 @@ def servidorWebSimples():
                         print(mensagem.decode())
 
                     socket_cliente.send(mensagem)
-                    #socket_cliente.close()
+                    socket_cliente.close()
 
                 except FileNotFoundError:
                     mensagem = (b'HTTP/1.1 404 Not Found'
