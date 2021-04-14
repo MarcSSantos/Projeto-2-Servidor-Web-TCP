@@ -3,15 +3,16 @@ import datetime
 import platform
 import mimetypes
 import os
+import time
 ###############################################
 # Digita na URL do navegador -> localhost:8080
 ###############################################
 plataforma = platform.system().title()
 
 if plataforma != 'Windows':
-    os.chdir('/c/Projeto_servidor_web/arq')
+    os.chdir('C:/Users/marcs/Documents/Redes/pro/Projeto-2-Servidor-Web-TCP/arq')
 else:
-    os.chdir('C:\\Projeto_servidor_web\\arq')
+    os.chdir('C:\\Users\\marcs\\Documents\\Redes\\pro\\Projeto-2-Servidor-Web-TCP\\arq')
     
 diretorio_atual = os.getcwd()
 print(diretorio_atual)
@@ -93,13 +94,16 @@ def servidorWebSimples():
                 
                 for arquivo in lista_de_arquivos:
                     bytes_arquivo = (os.path.getsize(arquivo))
+                    modificacao = os.path.getmtime(arquivo)
+                    modificacao_local = time.ctime(modificacao)
+                    
 
                     tamanho_arquivo = f'{bytes_arquivo/1024:.2f} KB' if f'{bytes_arquivo/(1024**2):.2f}' == '0.00' else f'{bytes_arquivo/(1024**2):.2f} MB'
 
                     mensagem += (f'\r\n<tr>'
                                  f'\r\n<td><h4 style ="margin-right: 50px; text-align: left;"><a href="\\{arquivo}">{arquivo}</a></h4></td>'
                                  f'\r\n<td>{tamanho_arquivo}</td>'
-                                 f'\r\n<td>{data_e_horario}</td>'
+                                 f'\r\n<td>{modificacao_local}</td>'
                                  f'\r\n</tr>').encode()
 
                 mensagem += ('\r\n</table>'
