@@ -96,7 +96,6 @@ def servidorWebSimples():
                     bytes_arquivo = (os.path.getsize(arquivo))
                     modificacao = os.path.getmtime(arquivo)
                     modificacao_local = time.ctime(modificacao)
-                    
 
                     tamanho_arquivo = f'{bytes_arquivo/1024:.2f} KB' if f'{bytes_arquivo/(1024**2):.2f}' == '0.00' else f'{bytes_arquivo/(1024**2):.2f} MB'
 
