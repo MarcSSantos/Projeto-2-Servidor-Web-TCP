@@ -232,5 +232,5 @@ def servidorWebSimples():
 servidorWebSimples()
 
 #ADICIONAR ELEMENTO A URL 
-#ADDDD HTML se houver algum arquivo externo, dar not found
-# E ACHO QUE É Só ISOOOOOOOOOOOOOO
+#ADDDD HTML se houver alguma solicitação externa, ex.: algum arquivo externo // a partir disso dar not found ou não
+#incitar erro nnotfound caso o arquivo não seja encontrado
