@@ -3,8 +3,7 @@
 ## Para Funcionar, segue:
 * 1 - Automaticamente será criado um diretório no local C: ou onde o arquivo servidor estiver
 * 2 - Se entrou numa pasta, click em voltar que você será retornado pra pasta anterior
-
-* 3 - Caso entre numa pasta, não clique "Voltar" do navegador, caso contrário, você permanecerá na página que estava antes
+* 3 - Ao clicar em atualizar, a pasta atual é atualizada, então se foi adicionado algum arquivo enquando o servidor funciona, atualizar vai fazer esse novo arquivo aparecer na listagem
  
 
 ## Ainda falta implementar

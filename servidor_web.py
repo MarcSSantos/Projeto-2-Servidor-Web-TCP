@@ -90,6 +90,7 @@ def erros_requisicao(get):
                         '\r\n<meta charset="UTF-8">'
                         '\r\n<meta name="viewport" content="width=device-width, initial-scale=1.0">'
                         '\r\n<title>Olá, essa e uma página de testes</title>'
+                        '\r\n<link rel="icon" type="image/x-icon" href="favicon.ico">'
                         '\r\n</head>'
                         '\r\n<body>'
                         '\r\n<h1>400 BAD REQUEST</h1>'
@@ -106,6 +107,7 @@ def erros_requisicao(get):
                         '\r\n<meta charset="UTF-8">'
                         '\r\n<meta name="viewport" content="width=device-width, initial-scale=1.0">'
                         '\r\n<title>Olá, essa e uma página de testes</title>'
+                        '\r\n<link rel="icon" type="image/x-icon" href="favicon.ico">'
                         '\r\n</head>'
                         '\r\n<body>'
                         '\r\n<h1>505 HTTP Version Not</h1>'
@@ -126,6 +128,7 @@ def erros_requisicao(get):
                     '\r\n<meta charset="UTF-8">'
                     '\r\n<meta name="viewport" content="width=device-width, initial-scale=1.0">'
                     '\r\n<title>Olá, essa e uma página de testes</title>'
+                    '\r\n<link rel="icon" type="image/x-icon" href="favicon.ico">'
                     '\r\n</head>'
                     '\r\n<body>'
                     '\r\n<h1>400 BAD REQUEST</h1>'
@@ -156,17 +159,12 @@ def atualiza_dir(diratual, requisicao):
                      
             elif aux != '' and arqrequisitado[1:] in aux: # SE O ARQUIVO ESTIVER, o diretório atual vai ter que ser reconstruídoooooooooo
                 diretorio += arqrequisitado
-                break
-            #elif lista_de_caminhos[elem] == 'arq' and arquivo_requisitado[1:] not in aux:
-            #    raise FileNotFoundError
+                break  
             
-            #elif aux != '' and arquivo_requisitado[1:] not in aux:
-                #separa_dir = pop_dir(diretorio_atual)
-                #junta_dir = join_method(separa_dir[elem+1:]) #Vai pegar a todas as pastas a partir da solicitação. Ex.: Solicito aquivo de uma pasta anterior, então ele vai apagar a pasta atual e vai retroceder
-                #novo_dir = diretorio_atual.replace('\\'+junta_dir,'') #Substitui o diretório antigo, pelo o novo
-                #diretorio_atual = novo_dir
-                #print(diretorio_atual, 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 2')
-                #break
+            elif aux != '' and arqrequisitado[1:] not in aux:
+                separa_dir = pop_dir(diretorio)               
+                junta_dir = join_method(separa_dir) #Vai pegar a todas as pastas a partir da solicitação. Ex.: Solicito aquivo de uma pasta anterior, então ele vai apagar a pasta atual e vai retroceder
+                diretorio = junta_dir
         
     return diretorio
     
