@@ -13,7 +13,14 @@ plataforma = platform.system().title()
 #    os.chdir('/c/Projeto_servidor_web/arq')
 #else:
 #    os.chdir('C:\\Projeto_servidor_web\\arq')
+
+
 def verifica_diretorio_ex():
+    '''
+    Verifica se há uma pasta para armazenar os arquivos do servidor
+    caso não haja qualquer pasta, cria um novo diretório para armazenar
+    os arquivos do servidor
+    '''
     caminho_inicial = ''
     
     if plataforma == "Windows":
@@ -31,12 +38,30 @@ def verifica_diretorio_ex():
           
 
 def join_method(lista):
-  return ''.join(['\\'+x if x != lista[0] else x for x in lista])
+    '''
+    Método para acelerar e facilitar a junção 
+    dos elementos de uma lista de diretórios
+    '''
+    indicador_de_caminho = '\\'
+    
+    if plataforma != 'Windows':
+        indicador_de_caminho = '/'
+    
+    return ''.join([indicador_de_caminho+x if x != lista[0] else x for x in lista])
 
 
 def pop_dir(diretorio):
+    '''
+    Vai reduzindo um diretório a cada vez que é chamada a função
+    '''
+    
+    indicador_de_caminho = '\\'
+    
+    if plataforma != 'Windows':
+        indicador_de_caminho = '/'
+        
     # C:\Projeto_servidor_web\arq\omega
-    restringir = diretorio.split('\\')
+    restringir = diretorio.split(indicador_de_caminho)
     
     if restringir[-1] != 'arq':
         restringir.pop()
@@ -44,19 +69,117 @@ def pop_dir(diretorio):
     
     else:
         return restringir
+    
+def erros_requisicao(get):
+    '''
+    Verifica a integridade do GET, se houver alguma discrepância,
+    a função retorna com uma mensagem de erro, caso contrário,
+    retorna uma mensagem que não encontrou nenhum erro.
+    '''
+    try:
+        msg_erro = ''
+        erro = True
+                   
+        if get[0] != 'GET' or get[2][:4] != 'HTTP':
+            msg_erro = ('HTTP/1.1 400 BAD REQUEST\r\n'
+                        'Content-Type: text/html\r\n'
+                        'charset=utf-8 \r\n\r\n'
+                        '<!DOCTYPE html>'
+                        '\r\n<html lang="pt-br">'
+                        '\r\n<head>'
+                        '\r\n<meta charset="UTF-8">'
+                        '\r\n<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+                        '\r\n<title>Olá, essa e uma página de testes</title>'
+                        '\r\n</head>'
+                        '\r\n<body>'
+                        '\r\n<h1>400 BAD REQUEST</h1>'
+                        '\r\n</body>'
+                        '\r\n</html>\r\n').encode()
+            
+        elif get[2][5:] != "1.1":
+            msg_erro = ('HTTP/1.1 505 HTTP Version Not Supported\r\n'
+                        'Content-Type: text/html\r\n'
+                        'charset=utf-8 \r\n\r\n'
+                        '<!DOCTYPE html>'
+                        '\r\n<html lang="pt-br">'
+                        '\r\n<head>'
+                        '\r\n<meta charset="UTF-8">'
+                        '\r\n<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+                        '\r\n<title>Olá, essa e uma página de testes</title>'
+                        '\r\n</head>'
+                        '\r\n<body>'
+                        '\r\n<h1>505 HTTP Version Not</h1>'
+                        '\r\n</body>'
+                        '\r\n</html>\r\n').encode()
+            
+        else:
+            erro = False
+            return msg_erro, erro
+    
+    except:
+        msg_erro = ('HTTP/1.1 400 BAD REQUEST\r\n'
+                    'Content-Type: text/html\r\n'
+                    'charset=utf-8 \r\n\r\n'
+                    '<!DOCTYPE html>'
+                    '\r\n<html lang="pt-br">'
+                    '\r\n<head>'
+                    '\r\n<meta charset="UTF-8">'
+                    '\r\n<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+                    '\r\n<title>Olá, essa e uma página de testes</title>'
+                    '\r\n</head>'
+                    '\r\n<body>'
+                    '\r\n<h1>400 BAD REQUEST</h1>'
+                    '\r\n</body>'
+                    '\r\n</html>\r\n').encode()
         
+    return msg_erro, erro
+            
+
+def atualiza_dir(diratual, requisicao):
+    '''
+    Essa função serve para atualizar um diretório de acordo com a requisição que foi realizada
+    '''
+    diretorio = diratual
+    arqrequisitado = requisicao
+    
+    arquivos_sem_permissao = os.listdir(os.getcwd())
+    
+    lista_de_caminhos = (diretorio).split('\\')
+    for elem in range(2, len(diretorio.split('\\'))):#####[::-1]:
+
+        if arqrequisitado != '\\' and arqrequisitado[1:] not in arquivos_sem_permissao:
+            aux = os.listdir(diretorio) if not os.path.isfile(diretorio+arqrequisitado) else ''
+              
+            if arqrequisitado[1:] == lista_de_caminhos[elem]:
+                diretorio = join_method(lista_de_caminhos[0:elem])
+                break                 
+                     
+            elif aux != '' and arqrequisitado[1:] in aux: # SE O ARQUIVO ESTIVER, o diretório atual vai ter que ser reconstruídoooooooooo
+                diretorio += arqrequisitado
+                break
+            #elif lista_de_caminhos[elem] == 'arq' and arquivo_requisitado[1:] not in aux:
+            #    raise FileNotFoundError
+            
+            #elif aux != '' and arquivo_requisitado[1:] not in aux:
+                #separa_dir = pop_dir(diretorio_atual)
+                #junta_dir = join_method(separa_dir[elem+1:]) #Vai pegar a todas as pastas a partir da solicitação. Ex.: Solicito aquivo de uma pasta anterior, então ele vai apagar a pasta atual e vai retroceder
+                #novo_dir = diretorio_atual.replace('\\'+junta_dir,'') #Substitui o diretório antigo, pelo o novo
+                #diretorio_atual = novo_dir
+                #print(diretorio_atual, 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 2')
+                #break
+        
+    return diretorio
     
 
 def servidorWebSimples():
     socket_servidor = socket(AF_INET, SOCK_STREAM)
     porta = 8080
     host = 'localhost'
+    verifica_diretorio_ex()
 
     try:
         socket_servidor.bind((host, porta))  # (('localhost',8080))
         socket_servidor.listen()
-        
-        verifica_diretorio_ex()
         
         print(f'Aguardando requisições...')
         
@@ -75,45 +198,24 @@ def servidorWebSimples():
             
             requisicao = socket_cliente.recv(1024).decode()
             dados_do_cabecalho = requisicao.split('\n')
-            
+#------------------------------------------------------------------------------------------------------------------------------------
+            msg, erro_na_requisicao = erros_requisicao(dados_do_cabecalho[0].split())#valida a condição do get
+
+            #Só vai verificar a condição do GET, se houver algum erro, o ciclo abaixo é interrompido e o cliente recebe uma mensagem de error
+            if erro_na_requisicao == True:
+                socket_cliente.send(msg)
+                socket_cliente.close()
+                
+                continue
+#------------------------------------------------------------------------------------------------------------------------------------            
+            #as 2 variáveis logo abaixo só tratam a condição do get, no caso, trata arquivo com espaçamento
             arquivo_nao_tratado = dados_do_cabecalho[0].split()[1].replace('/', '\\') if len(requisicao) != 0 else '/' if plataforma != 'Windows' else '\\' 
             arquivo_requisitado = arquivo_nao_tratado.replace('%20',' ') if '%20' in arquivo_nao_tratado else arquivo_nao_tratado
 
-            lista_arquivos_sem_permissao = os.listdir(os.getcwd())
+            lista_arquivos_sem_permissao = os.listdir(os.getcwd())#não valida arquivos que estão junto com o servidor
             
-            lista_de_caminhos = (diretorio_atual).split('\\')
-            for elem in range(2, len(diretorio_atual.split('\\'))):#####[::-1]:
-
-                
-                if arquivo_requisitado != '\\' and arquivo_requisitado[1:] not in lista_arquivos_sem_permissao:
-                    aux = os.listdir(diretorio_atual) if not os.path.isfile(diretorio_atual+arquivo_requisitado) else ''
-                    
-                    #if lista_de_caminhos[elem] == 'arq' and arquivo_requisitado[1:] not in aux:
-                    #    raise FileNotFoundError
-                    
-                    if arquivo_requisitado[1:] == lista_de_caminhos[elem]:
-                        diretorio_atual = join_method(lista_de_caminhos[0:elem])
-                        break                 
-
-                                     
-                    elif aux != '' and arquivo_requisitado[1:] in aux: # SE O ARQUIVO ESTIVER, o diretório atual vai ter que ser reconstruídoooooooooo
-                        diretorio_atual += arquivo_requisitado
-                        break
-                       
-                    #elif aux != '' and arquivo_requisitado[1:] not in aux:
-                        #separa_dir = pop_dir(diretorio_atual)
-                        #junta_dir = join_method(separa_dir[elem+1:]) #Vai pegar a todas as pastas a partir da solicitação. Ex.: Solicito aquivo de uma pasta anterior, então ele vai apagar a pasta atual e vai retroceder
-                        #novo_dir = diretorio_atual.replace('\\'+junta_dir,'') #Substitui o diretório antigo, pelo o novo
-                        #diretorio_atual = novo_dir
-                        #print(diretorio_atual, 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 2')
-                        #break
-                        
-                #-----------------------------------------------------------------------------    
-                #SE FOR SÓ BARRAAAAAAAAAAAAAA, EU NÃO ADICIONOOOOOOOOOOOOOOOOOOOOOOOOOO      |
-                #-----------------------------------------------------------------------------    
-                else:
-                    break
-                
+            #atualiza o diretório a partir das requisições
+            diretorio_atual = atualiza_dir(diretorio_atual, arquivo_requisitado)
 
             #-- Formatando a data
             formatacao = '%a, %d %b %Y %H:%M:%S'
@@ -126,25 +228,12 @@ def servidorWebSimples():
 
             print('Buscando... ', diretorio_atual+' + '+arquivo_requisitado)
             
-            cabecalho = ('HTTP/1.1 200 OK'
-                         'Server: Local Teste'
-                         'System: sistema versao_sistema'
-                         'Content-Type: text/html; charset=utf-8'
-                         'Date: Wed, 07 Sep 2016 00:11:31 GMT'
-                         'Connection: Keep-alive'
-                         'Allow: GET'
-
-                         'Content-Length: 41823')
-
-
+            #verifica se a requisição é um arquivo ou pasta
             arquivo_v = os.path.isfile(diretorio_atual+arquivo_requisitado)
             
+            
+            #essa condição serve para verificar se uma requisição é só uma barra ou uma pasta e então listar o diretório
             if arquivo_requisitado[-1] == '\\' or arquivo_v == False and arquivo_requisitado[1:] not in lista_arquivos_sem_permissao:
-                
-                #else:
-                #                   
-                #    diretorio_atual += arquivo_requisitado if arquivo_requisitado != '\\' else ''
-                #    print(diretorio_atual, 'BANADAAAAAAAAAAAAAAAAAAAAAAAAAA 3')
 
                 mensagem = (b'HTTP/1.1 200 OK'
                             b'\r\nServer: Local Teste'
@@ -182,6 +271,7 @@ def servidorWebSimples():
                 
                 lista_de_arquivos = os.listdir(path=diretorio_atual)
                 
+                #esse for serve como uma lista em HTML, apenas para dar propriedades href aos arquivos listados da pasta
                 for arquivo in lista_de_arquivos:
                     verifica_pasta = 'PASTA' if not os.path.isfile(diretorio_atual+'\\'+arquivo) else 'ABACATE'
 
@@ -216,19 +306,23 @@ def servidorWebSimples():
                             '\r\n</body>'
                             '\r\n</html>\r\n').encode()
 
-                socket_cliente.send(mensagem)
-                #socket_cliente.close()               
+                socket_cliente.send(mensagem)              
 #----------------------------------------------------------------------------------------------------------------------
-#Falta leeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer
+
+            #essa nessa contra condição serve para ler, finalmente, o arquivo que foi requisitado
             else:
                 try:                    
                     leitura_arquivo = ''
-                    if arquivo_requisitado == '\\styleProjRedes.css' or arquivo_requisitado == '\\favicon.ico':
+                    
+                    #aqui verifica se a requisição tem alguma propriedade necessária para o servidor, ou seja, algum arquivo que é requisitado pelo próprio servidor
+                    if '\\styleProjRedes.css' in arquivo_requisitado or '\\favicon.ico' in arquivo_requisitado:
+
                         with open(os.getcwd()+arquivo_requisitado, 'rb') as arquivo:
                             leitura_arquivo = arquivo.readlines()
                             
                         extensao = mimetypes.MimeTypes().guess_type(os.getcwd()+arquivo_requisitado)[0]
                     
+                    #aqui verifica requisições de arquivos provenientes dos clientes e os lê
                     else:
                         with open(diretorio_atual+arquivo_requisitado, 'rb') as arquivo:
                             leitura_arquivo = arquivo.readlines()  
@@ -237,16 +331,17 @@ def servidorWebSimples():
                         print(extensao)
 
                     caract_escritos = b''
-
-                    if extensao == None:
-                        extensao = "text/txt"
-                
-
+                    
+                    #serve para concatecar todos os elementos de bytes
                     for char in leitura_arquivo:
                         caract_escritos += char
                     
+                    if extensao == None:
+                        extensao = "text/txt"
+                
                     bits = str(len(caract_escritos))
 
+                    #cabecalho
                     mensagem = (b'HTTP/1.1 200 OK'
                                 b'\r\nServer: Local Teste'
                                 b'\r\nSystem: ' + sistema.encode() + versao_sistema.encode() +
@@ -258,12 +353,7 @@ def servidorWebSimples():
                    
                     mensagem += caract_escritos
 
-                    if extensao.split('/')[0] == 'text':
-                        #print(mensagem.decode())
-                        pass
-
                     socket_cliente.send(mensagem)
-                    #socket_cliente.close()
                     
                     print(diretorio_atual, '<--')
                     print('-'*50)
@@ -280,6 +370,8 @@ def servidorWebSimples():
                                  '\r\n<head>'
                                  '\r\n<title>Olá, essa é uma página de testes</title>'
                                  '\r\n<link rel="icon" type="image/x-icon" href="favicon.ico">'
+                                 '\r\n<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+                                 '\r\n<meta charset = "utf-8">'
                                  '\r\n</head>'
                                  '\r\n<body>'
                                  '\r\n<h1>HTTP/1.1 404 NOT FOUND</h1>'
