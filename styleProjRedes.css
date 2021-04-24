@@ -14,7 +14,7 @@
 }
 
 body {
-    background: #fa9489;
+    background: #474747;
     justify-content: center;
     margin: 15px;
 }
@@ -38,9 +38,14 @@ nav input {
 nav input:hover {
     cursor: pointer;
     background-color: aqua;
-    border-color: rgb(7, 202, 202);
+    border-color: rgb(231, 247, 245);
     color: rgb(255, 255, 255);
-    transition: 0.75s;
+    transition: 1.0s;
+
+}
+
+tr{
+    color: greenyellow;
 }
 
 .voltar {
@@ -48,7 +53,7 @@ nav input:hover {
 }
 
 .tabela {
-    background-color: rgb(255,255,255);/* achei lindona a cor -> #aa3333 */
+    background-color: rgb(145, 141, 141);/* achei lindona a cor -> #aa3333 */
     border: 1.1px solid rgb(219,219,219);
     width: 100%;
     margin-right: 50px;
@@ -58,8 +63,8 @@ nav input:hover {
 .arquivo tr {
     align-items: left;
     justify-content: left;
-    color: rgb(218, 245, 99);
-    background-color: #fa8072;
+    color: rgb(78, 102, 167);
+    background-color: #dbdada;
     
 }
 
@@ -73,15 +78,17 @@ nav input:hover {
 }
 
 .link_arq {
-    color: rgb(255, 252, 68);
+    color: rgb(63, 63, 63);
     transition: 0.5s;
 }
 
 .link_arq:hover {
-    color:aqua;
+    color:rgb(95, 201, 201);
+    transition: 0.7s;
+    
 }
 
-.nome_coluna {
+.nome_coluna{
     font-weight: bold;
     text-align: center;
 }
@@ -103,7 +110,7 @@ nav input:hover {
         display: flex;
         flex-direction: column; 
         width: 50%;
-        color:rgb(246, 22, 67);
+        color:rgb(11, 66, 92);
     }
     nav input {
         position: relative;
