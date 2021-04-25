@@ -151,10 +151,13 @@ def atualiza_dir(diratual, requisicao):
     lista_de_caminhos = diretorio.split('\\')
 
     if arqrequisitado[1:] == lista_de_caminhos[-1]:
-        #diretorio = join_method(lista_de_caminhos[0:elem]) + arqrequisitado
-        return diretorio    
+        if arqrequisitado[1:] in os.listdir(diretorio):
+            return diretorio + arqrequisitado 
+        
+        else:
+            return diretorio  
     
-    for elem in range(lista_de_caminhos.index('arq'), len(diretorio.split('\\'))):#####[::-1]:
+    for _ in range(lista_de_caminhos.index('arq'), len(diretorio.split('\\'))):
 
         if arqrequisitado != '\\' and arqrequisitado[1:] not in arquivos_sem_permissao:
             aux = os.listdir(diretorio) if not os.path.isfile(diretorio+arqrequisitado) else ''
@@ -165,14 +168,17 @@ def atualiza_dir(diratual, requisicao):
             
             elif aux != '' and arqrequisitado[1:] not in aux and arqrequisitado[1:] != 'voltar':
                 separa_dir = pop_dir(diretorio)
-                
-                #if separa_dir[-1] == 'arq' and arqrequisitado[1:] not in aux:
-                #    raise FileNotFoundError
-                
-                               
+                                              
                 junta_dir = join_method(separa_dir) #Vai pegar a todas as pastas a partir da solicitação. Ex.: Solicito aquivo de uma pasta anterior, então ele vai apagar a pasta atual e vai retroceder
                 diretorio = junta_dir
             
+                if separa_dir[-1] == 'arq':
+                    ultimo_dir = os.listdir(junta_dir)
+                                        
+                    if arqrequisitado[1:] not in ultimo_dir:                        
+                        raise FileNotFoundError
+                    
+                    
     return diretorio
     
 
@@ -214,21 +220,45 @@ def servidorWebSimples():
             
 #------------------------------------------------------------------------------------------------------------------------------------            
             #as 2 variáveis logo abaixo só tratam a condição do get, no caso, trata arquivo com espaçamento
-            arquivo_nao_tratado = dados_do_cabecalho[0].split()[1].replace('/', '\\') if len(requisicao) != 0 else '/' if plataforma != 'Windows' else '\\' 
+            arquivo_nao_tratado = dados_do_cabecalho[0].split()[1].replace('/', '\\') if len(requisicao) != 0 else ''
             arquivo_requisitado = arquivo_nao_tratado.replace('%20',' ') if '%20' in arquivo_nao_tratado else arquivo_nao_tratado
             
             if arquivo_requisitado[1:] == 'voltar':
-
                 voltar = pop_dir(diretorio_atual)
                 diretorio_atual = join_method(voltar)
-                arquivo_requisitado = '\\'+voltar[-1] if voltar[-1] != 'arq' else "\\"
+                arquivo_requisitado = '\\'#+voltar[-1] if voltar[-1] != 'arq' else "\\"
    
 
             lista_arquivos_sem_permissao = os.listdir(os.getcwd())#não valida arquivos que estão junto com o servidor
             
             #atualiza o diretório a partir das requisições
-            diretorio_atual = atualiza_dir(diretorio_atual, arquivo_requisitado) if arquivo_requisitado[1:] not in lista_arquivos_sem_permissao else diretorio_atual
+            try:
+                diretorio_atual = atualiza_dir(diretorio_atual, arquivo_requisitado) if arquivo_requisitado[1:] not in lista_arquivos_sem_permissao else diretorio_atual
             
+            except FileNotFoundError:
+                mensagem = (b'HTTP/1.1 404 Not Found'
+                            b'\r\nServer: Local Teste'
+                            b'\r\nSystem: ' + sistema.encode() + b' ' + versao_sistema.encode() +
+                            b'\r\nDate: ' + data_e_horario.encode() + b' UTC'
+                            b'\r\nContent-Type: text/html; charset=utf-8\r\n\r\n')
+
+                mensagem += ('<!DOCTYPE html>'
+                            '\r\n<html lang="pt-br">'
+                            '\r\n<head>'
+                            '\r\n<title>Olá, essa é uma página de testes</title>'
+                            '\r\n<link rel="icon" type="image/x-icon" href="favicon.ico">'
+                            '\r\n<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+                            '\r\n<meta charset = "utf-8">'
+                            '\r\n</head>'
+                            '\r\n<body>'
+                            '\r\n<h1>HTTP/1.1 404 NOT FOUND</h1>'
+                            '\r\n<h3>File Not Found</h3>'
+                            '\r\n</body>'
+                            '\r\n</html>\r\n').encode()
+
+                socket_cliente.send(mensagem)
+                socket_cliente.close()
+                continue
 
             #-- Formatando a data
             formatacao = '%a, %d %b %Y %H:%M:%S'
@@ -248,7 +278,7 @@ def servidorWebSimples():
             #essa condição serve para verificar se uma requisição é só uma barra ou uma pasta e então listar o diretório
             if arquivo_requisitado[-1] == '\\' or arquivo_v == False and arquivo_requisitado[1:] not in lista_arquivos_sem_permissao:
 
-                atualizar = diretorio_atual.split('\\')[-1] if diretorio_atual.split('\\')[-1] != 'arq' else ''
+                atualizar = ''# if diretorio_atual.split('\\')[-1] != 'arq' else ''''
                 
                 mensagem = (b'HTTP/1.1 200 OK'
                             b'\r\nServer: Local Teste'
@@ -266,7 +296,7 @@ def servidorWebSimples():
                              f'\r\n</head>'
                              f'\r\n<body>'
                              f'\r\n<nav class>'
-                             f'\r\n<a href="\\{atualizar}"><input type="submit" value="Atualizar lista de arquivos" class = "atualizar"></a>'
+                             f'\r\n<a href="{atualizar}"><input type="submit" value="Atualizar lista de arquivos" class = "atualizar"></a>'
                              f'\r\n<a href="voltar"><input type="submit" value="Voltar Pasta" class = "voltar"></a>'
                              f'\r\n</nav>'
                              f'\r\n<nav>'
