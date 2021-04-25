@@ -11,3 +11,5 @@
 * incitar erro notfound caso o arquivo não seja encontrado
 * entregar o endereçamento da URL por inteiro, exemplo, quero ir pra pasta nova, então entrego /omega/pasta nova e não só pasta nova
 * requisição de volta = #
+
+### O objetivo do código entre a equipe, não foi desembargar um código limpo, mas explorar ao máximo os testes com diferentes formas afim de compreender o funcionamento das propriedades do projeto.
