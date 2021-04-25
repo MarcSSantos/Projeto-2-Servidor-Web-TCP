@@ -278,7 +278,7 @@ def servidorWebSimples():
             #essa condição serve para verificar se uma requisição é só uma barra ou uma pasta e então listar o diretório
             if arquivo_requisitado[-1] == '\\' or arquivo_v == False and arquivo_requisitado[1:] not in lista_arquivos_sem_permissao:
 
-                atualizar = ''# if diretorio_atual.split('\\')[-1] != 'arq' else ''''
+                atualizar = '\\'# if diretorio_atual.split('\\')[-1] != 'arq' else ''''
                 
                 mensagem = (b'HTTP/1.1 200 OK'
                             b'\r\nServer: Local Teste'
