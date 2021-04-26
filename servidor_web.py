@@ -9,12 +9,6 @@ import time
 ###############################################
 plataforma = platform.system().title()
 
-#if plataforma != 'Windows':
-#    os.chdir('/c/Projeto_servidor_web/arq')
-#else:
-#    os.chdir('C:\\Projeto_servidor_web\\arq')
-
-
 def verifica_diretorio_ex():
     '''
     Verifica se há uma pasta para armazenar os arquivos do servidor
@@ -71,6 +65,7 @@ def pop_dir(diretorio):
     else:
         return restringir
     
+
 def erros_requisicao(get):
     '''
     Verifica a integridade do GET, se houver alguma discrepância,
@@ -139,16 +134,17 @@ def erros_requisicao(get):
     return msg_erro, erro
             
 
-def atualiza_dir(diratual, requisicao):
+def atualiza_dir(diratual, requisicao, dplataforma):
     '''
     Essa função serve para atualizar um diretório de acordo com a requisição que foi realizada
     '''
     diretorio = diratual
     arqrequisitado = requisicao
+    divisor_caminho = dplataforma
     
     arquivos_sem_permissao = os.listdir(os.getcwd())
     
-    lista_de_caminhos = diretorio.split('\\')
+    lista_de_caminhos = diretorio.split(divisor_caminho)
 
     if arqrequisitado[1:] == lista_de_caminhos[-1]:
         if arqrequisitado[1:] in os.listdir(diretorio):
@@ -157,9 +153,9 @@ def atualiza_dir(diratual, requisicao):
         else:
             return diretorio  
     
-    for _ in range(lista_de_caminhos.index('arq'), len(diretorio.split('\\'))):
+    for _ in range(lista_de_caminhos.index('arq'), len(lista_de_caminhos)):
 
-        if arqrequisitado != '\\' and arqrequisitado[1:] not in arquivos_sem_permissao:
+        if arqrequisitado != divisor_caminho and arqrequisitado[1:] not in arquivos_sem_permissao:
             aux = os.listdir(diretorio) if not os.path.isfile(diretorio+arqrequisitado) else ''
                                               
             if aux != '' and arqrequisitado[1:] in aux: # SE O ARQUIVO ESTIVER, o diretório atual vai ter que ser reconstruídoooooooooo
@@ -177,8 +173,7 @@ def atualiza_dir(diratual, requisicao):
                                         
                     if arqrequisitado[1:] not in ultimo_dir:                        
                         raise FileNotFoundError
-                    
-                    
+                                        
     return diretorio
     
 
@@ -192,9 +187,11 @@ def servidorWebSimples():
         socket_servidor.bind((host, porta))  # (('localhost',8080))
         socket_servidor.listen()
         
+        estabelece_plataforma = '\\' if plataforma == 'Windows' else '/'
+        
         print(f'Aguardando requisições...')
         
-        diretorio_primario = os.getcwd() + '\\arq' #pasta onde deve ficar os arquivos não intrinsecos ao servidor
+        diretorio_primario = os.getcwd() + estabelece_plataforma + 'arq' #pasta onde deve ficar os arquivos não intrinsecos ao servidor
         
         diretorio_atual = diretorio_primario
         
@@ -209,6 +206,7 @@ def servidorWebSimples():
             
             requisicao = socket_cliente.recv(1024).decode()
             dados_do_cabecalho = requisicao.split('\n')
+            
 #------------------------------------------------------------------------------------------------------------------------------------
             msg, erro_na_requisicao = erros_requisicao(dados_do_cabecalho[0].split())#valida a condição do get
 
@@ -220,20 +218,20 @@ def servidorWebSimples():
             
 #------------------------------------------------------------------------------------------------------------------------------------            
             #as 2 variáveis logo abaixo só tratam a condição do get, no caso, trata arquivo com espaçamento
-            arquivo_nao_tratado = dados_do_cabecalho[0].split()[1].replace('/', '\\') if len(requisicao) != 0 else ''
+            arquivo_nao_tratado = dados_do_cabecalho[0].split()[1].replace('/', estabelece_plataforma) if len(requisicao) != 0 else ''
             arquivo_requisitado = arquivo_nao_tratado.replace('%20',' ') if '%20' in arquivo_nao_tratado else arquivo_nao_tratado
             
             if arquivo_requisitado[1:] == 'voltar':
                 voltar = pop_dir(diretorio_atual)
                 diretorio_atual = join_method(voltar)
-                arquivo_requisitado = '\\'#+voltar[-1] if voltar[-1] != 'arq' else "\\"
+                arquivo_requisitado = estabelece_plataforma#+voltar[-1] if voltar[-1] != 'arq' else "\\"
    
 
             lista_arquivos_sem_permissao = os.listdir(os.getcwd())#não valida arquivos que estão junto com o servidor
             
             #atualiza o diretório a partir das requisições
             try:
-                diretorio_atual = atualiza_dir(diretorio_atual, arquivo_requisitado) if arquivo_requisitado[1:] not in lista_arquivos_sem_permissao else diretorio_atual
+                diretorio_atual = atualiza_dir(diretorio_atual, arquivo_requisitado, estabelece_plataforma) if arquivo_requisitado[1:] not in lista_arquivos_sem_permissao else diretorio_atual
             
             except FileNotFoundError:
                 mensagem = (b'HTTP/1.1 404 Not Found'
@@ -276,9 +274,9 @@ def servidorWebSimples():
             
             
             #essa condição serve para verificar se uma requisição é só uma barra ou uma pasta e então listar o diretório
-            if arquivo_requisitado[-1] == '\\' or arquivo_v == False and arquivo_requisitado[1:] not in lista_arquivos_sem_permissao:
+            if arquivo_requisitado[-1] == estabelece_plataforma or arquivo_v == False and arquivo_requisitado[1:] not in lista_arquivos_sem_permissao:
 
-                atualizar = '\\'# if diretorio_atual.split('\\')[-1] != 'arq' else ''''
+                atualizar = estabelece_plataforma# if diretorio_atual.split('\\')[-1] != 'arq' else ''
                 
                 mensagem = (b'HTTP/1.1 200 OK'
                             b'\r\nServer: Local Teste'
@@ -315,29 +313,29 @@ def servidorWebSimples():
                 
                 #esse for serve como uma lista em HTML, apenas para dar propriedades href aos arquivos listados da pasta
                 for arquivo in lista_de_arquivos:
-                    verifica_pasta = 'PASTA' if not os.path.isfile(diretorio_atual+'\\'+arquivo) else 'ABACATE'
+                    verifica_pasta = 'PASTA' if not os.path.isfile(diretorio_atual+estabelece_plataforma+arquivo) else 'ABACATE'
 
-                    modificacao = os.path.getmtime(diretorio_atual+'\\'+arquivo)
+                    modificacao = os.path.getmtime(diretorio_atual+estabelece_plataforma+arquivo)
                     modificacao_local = time.ctime(modificacao)
 
                     if verifica_pasta == 'PASTA':
-                        bytes_pasta = sum([os.path.getsize(diretorio_atual+'\\'+arquivo+'\\'+f) for f in os.listdir(diretorio_atual+'\\'+arquivo)])
+                        bytes_pasta = sum([os.path.getsize(diretorio_atual+estabelece_plataforma+arquivo+estabelece_plataforma+f) for f in os.listdir(diretorio_atual+estabelece_plataforma+arquivo)])
 
                         tamanho_pasta = f'{bytes_pasta/1024:.2f} KB' if f'{bytes_pasta/(1024**2):.2f}' == '0.00' else f'{bytes_pasta/(1024**2):.2f} MB'
 
                         mensagem += (f'\r\n<tr>'
-                                    f'\r\n<td><h4><a href="\\{arquivo}" class="link_arq">{arquivo}\\.</a></h4></td>'
+                                    f'\r\n<td><h4><a href="{estabelece_plataforma+arquivo}" class="link_arq">{arquivo}\\.</a></h4></td>'
                                     f'\r\n<td>{tamanho_pasta}</td>'
                                     f'\r\n<td>{modificacao_local}</td>'
                                     f'\r\n</tr>').encode()
 
                     else:
-                        bytes_arquivo = (os.path.getsize(diretorio_atual+'\\'+arquivo))
+                        bytes_arquivo = (os.path.getsize(diretorio_atual+estabelece_plataforma+arquivo))
 
                         tamanho_arquivo = f'{bytes_arquivo/1024:.2f} KB' if f'{bytes_arquivo/(1024**2):.2f}' == '0.00' else f'{bytes_arquivo/(1024**2):.2f} MB'
 
                         mensagem += (f'\r\n<tr>'
-                                    f'\r\n<td><h4><a href="\\{arquivo}" class="link_arq">{arquivo}</a></h4></td>'
+                                    f'\r\n<td><h4><a href="{estabelece_plataforma+arquivo}" class="link_arq">{arquivo}</a></h4></td>'
                                     f'\r\n<td>{tamanho_arquivo}</td>'
                                     f'\r\n<td>{modificacao_local}</td>'
                                     f'\r\n</tr>').encode()
@@ -357,7 +355,7 @@ def servidorWebSimples():
                     leitura_arquivo = ''
                     
                     #aqui verifica se a requisição tem alguma propriedade necessária para o servidor, ou seja, algum arquivo que é requisitado pelo próprio servidor
-                    if '\\styleProjRedes.css' in arquivo_requisitado or '\\favicon.ico' in arquivo_requisitado:
+                    if 'styleProjRedes.css' in arquivo_requisitado[1:] or 'favicon.ico' in arquivo_requisitado[1:]:
 
                         with open(os.getcwd()+arquivo_requisitado, 'rb') as arquivo:
                             leitura_arquivo = arquivo.readlines()
