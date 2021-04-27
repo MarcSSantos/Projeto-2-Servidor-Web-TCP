@@ -1,4 +1,5 @@
 from socket import *
+from threading import Thread
 import datetime
 import platform
 import mimetypes
@@ -268,17 +269,14 @@ def servidorWebSimples():
                 socket_cliente.send(mensagem)
                 socket_cliente.close()
                 continue
-
                 
             print(f'Reequisição do arquivo -> {arquivo_requisitado}\n\n')
-
-
+            
             print('Buscando... ', diretorio_atual+' + '+arquivo_requisitado)
             
             #verifica se a requisição é um arquivo ou pasta
             arquivo_v = os.path.isfile(diretorio_atual+arquivo_requisitado)
-            
-            
+                        
             #essa condição serve para verificar se uma requisição é só uma barra ou uma pasta e então listar o diretório
             if arquivo_requisitado[-1] == estabelece_plataforma or arquivo_v == False and arquivo_requisitado[1:] not in lista_arquivos_sem_permissao:
 
@@ -382,8 +380,7 @@ def servidorWebSimples():
                     for char in leitura_arquivo:
                         caract_escritos += char
                     
-                    
-                    
+                      
                     if extensao == None and ler != '+':
                         extensao = "text/txt"
 
@@ -465,16 +462,7 @@ def servidorWebSimples():
     except KeyboardInterrupt:
         print('Encerrando...')
 
-    #except Exception as exc:
-    #    print(f'Erro: {Exception}{exc}')
 
     socket_servidor.close()
 
-servidorWebSimples()
-
-#ADICIONAR ELEMENTO A URL 
-#incitar erro notfound caso o arquivo não seja encontrado
-#entregar o endereçamento da URL por inteiro, exemplo, quero ir pra pasta nova, então entrego /omega/pasta nova e não só pasta nova
-
-#requisição de volta = #
-#criar pasta assim que se inicia o programa
+Thread(target=servidorWebSimples).start()
