@@ -404,11 +404,13 @@ def servidorWebSimples():
                                     f'\r\n<link rel="stylesheet" href="./styleProjRedes.css">'
                                     f'\r\n</head>'
                                     f'\r\n<body>'
-                                    f'\r\n<nav id="redim">'
-                                    f'\r\n<a href="{arquivo_requisitado}+"><input type="submit" value="Ler arquivo codificado em .TXT" class = "leitura"></a>'
+                                    f'\r\n<nav class="posicao">'
+                                    f'\r\n<a href="{arquivo_requisitado}+"><input type="submit" value="Ler arquivo em .TXT" class = "leitura"></a>'
                                     f'\r\n<a href="{arquivo_requisitado}" download><input type="submit" value="Download" class = "download"></a>'
                                     f'\r\n<a href="{retorno}"><input type="submit" value="Retornar" class = "retornar"></a>'
-                                    f'\r\n<nav>').encode()
+                                    f'\r\n</nav>'
+                                    f'\r\n</body>'
+                                    f'\r\n</html>').encode()
                         
                     else:
                         extensao = "text/txt" if extensao == None else extensao
@@ -424,7 +426,7 @@ def servidorWebSimples():
                                     b'\r\nAllow: ' + dados_do_cabecalho[0].split()[0].encode() +
                                     b'\r\nContent-Length: ' + bits.encode() +
                                     b'\r\nContent-Type: ' + extensao.encode() + b'; charset=utf-8\r\n\r\n')
-                    
+                        
                         mensagem += caract_escritos
 
                     socket_cliente.send(mensagem)
