@@ -143,7 +143,7 @@ def atualiza_dir(diratual, requisicao, dplataforma):
     divisor_caminho = dplataforma
     j = arqrequisitado.split(divisor_caminho) if arqrequisitado != divisor_caminho else ['','']
     diretorio = diratual#os.getcwd()+divisor_caminho+'arq'+divisor_caminho.join(j[:-2])
-    print(diretorio,'AAAAAAAAAAAAAAAAA', arqrequisitado)
+    print(diretorio,'DIFERENÇAAAAAAAAAAA', arqrequisitado)
     
     arquivos_sem_permissao = os.listdir(os.getcwd())
     
