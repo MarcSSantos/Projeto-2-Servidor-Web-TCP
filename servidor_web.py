@@ -221,6 +221,11 @@ def servidorWebSimples():
             arquivo_nao_tratado = dados_do_cabecalho[0].split()[1].replace('/', estabelece_plataforma) if len(requisicao) != 0 else ''
             arquivo_requisitado = arquivo_nao_tratado.replace('%20',' ') if '%20' in arquivo_nao_tratado else arquivo_nao_tratado
             
+            ler = ''
+            if arquivo_requisitado[-1] == '+':
+                ler = '+'
+                arquivo_requisitado = arquivo_requisitado[:-1]
+            
             if arquivo_requisitado[1:] == 'voltar':
                 voltar = pop_dir(diretorio_atual)
                 diretorio_atual = join_method(voltar)
@@ -376,22 +381,51 @@ def servidorWebSimples():
                     for char in leitura_arquivo:
                         caract_escritos += char
                     
-                    if extensao == None:
+                    
+                    
+                    if extensao == None and ler != '+':
                         extensao = "text/txt"
-                
-                    bits = str(len(caract_escritos))
 
-                    #cabecalho
-                    mensagem = (b'HTTP/1.1 200 OK'
-                                b'\r\nServer: Local Teste'
-                                b'\r\nSystem: ' + sistema.encode() + versao_sistema.encode() +
-                                b'\r\nDate: ' + data_e_horario.encode() + b' UTC'
-                                b'\r\n' + dados_do_cabecalho[2].encode() +
-                                b'\r\nAllow: ' + dados_do_cabecalho[0].split()[0].encode() +
-                                b'\r\nContent-Length: ' + bits.encode() +
-                                b'\r\nContent-Type: ' + extensao.encode() + b'; charset=utf-8\r\n\r\n')
-                   
-                    mensagem += caract_escritos
+                        retorno = estabelece_plataforma
+                        mensagem = (b'HTTP/1.1 200 OK'
+                                    b'\r\nServer: Local Teste'
+                                    b'\r\nSystem: ' + sistema.encode() + versao_sistema.encode() +
+                                    b'\r\nDate: ' + data_e_horario.encode() + b' UTC'
+                                    b'\r\n' + dados_do_cabecalho[2].encode() +
+                                    b'\r\nAllow: ' + dados_do_cabecalho[0].split()[0].encode() +
+                                    b'\r\nContent-Type: text/html; charset=utf-8\r\n\r\n')
+                        
+                        mensagem += (f'<!DOCTYPE html>'
+                                    f'\r\n<html lang="pt-br">'
+                                    f'\r\n<head>'
+                                    f'\r\n<meta name = "viewport" content = "width=device-wwidth, initial-scale=1.0">'
+                                    f'\r\n<title>Olá, essa e uma página de testes</title>'
+                                    f'\r\n<link rel="icon" type="image/x-icon" href="favicon.ico">'
+                                    f'\r\n<link rel="stylesheet" href="./styleProjRedes.css">'
+                                    f'\r\n</head>'
+                                    f'\r\n<body>'
+                                    f'\r\n<nav id="redim">'
+                                    f'\r\n<a href="{arquivo_requisitado}+"><input type="submit" value="Ler arquivo codificado em .TXT" class = "leitura"></a>'
+                                    f'\r\n<a href="{arquivo_requisitado}" download><input type="submit" value="Download" class = "download"></a>'
+                                    f'\r\n<a href="{retorno}"><input type="submit" value="Retornar" class = "retornar"></a>'
+                                    f'\r\n<nav>').encode()
+                        
+                    else:
+                        extensao = "text/txt" if extensao == None else extensao
+
+                        bits = str(len(caract_escritos))
+
+                        #cabecalho
+                        mensagem = (b'HTTP/1.1 200 OK'
+                                    b'\r\nServer: Local Teste'
+                                    b'\r\nSystem: ' + sistema.encode() + versao_sistema.encode() +
+                                    b'\r\nDate: ' + data_e_horario.encode() + b' UTC'
+                                    b'\r\n' + dados_do_cabecalho[2].encode() +
+                                    b'\r\nAllow: ' + dados_do_cabecalho[0].split()[0].encode() +
+                                    b'\r\nContent-Length: ' + bits.encode() +
+                                    b'\r\nContent-Type: ' + extensao.encode() + b'; charset=utf-8\r\n\r\n')
+                    
+                        mensagem += caract_escritos
 
                     socket_cliente.send(mensagem)
                     
