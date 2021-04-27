@@ -234,6 +234,12 @@ def servidorWebSimples():
 
             lista_arquivos_sem_permissao = os.listdir(os.getcwd())#não valida arquivos que estão junto com o servidor
             
+            #-- Formatando a data
+            formatacao = '%a, %d %b %Y %H:%M:%S'
+            dia_atual = datetime.datetime.today()
+            data_e_horario = dia_atual.now().strftime(formatacao)
+            #--
+            
             #atualiza o diretório a partir das requisições
             try:
                 diretorio_atual = atualiza_dir(diretorio_atual, arquivo_requisitado, estabelece_plataforma) if arquivo_requisitado[1:] not in lista_arquivos_sem_permissao else diretorio_atual
@@ -263,11 +269,6 @@ def servidorWebSimples():
                 socket_cliente.close()
                 continue
 
-            #-- Formatando a data
-            formatacao = '%a, %d %b %Y %H:%M:%S'
-            dia_atual = datetime.datetime.today()
-            data_e_horario = dia_atual.now().strftime(formatacao)
-            #--
                 
             print(f'Reequisição do arquivo -> {arquivo_requisitado}\n\n')
 
