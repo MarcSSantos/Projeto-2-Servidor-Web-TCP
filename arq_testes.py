@@ -9,12 +9,6 @@ import time
 ###############################################
 plataforma = platform.system().title()
 
-#if plataforma != 'Windows':
-#    os.chdir('/c/Projeto_servidor_web/arq')
-#else:
-#    os.chdir('C:\\Projeto_servidor_web\\arq')
-
-
 def verifica_diretorio_ex():
     '''
     Verifica se há uma pasta para armazenar os arquivos do servidor
@@ -71,6 +65,7 @@ def pop_dir(diretorio):
     else:
         return restringir
     
+
 def erros_requisicao(get):
     '''
     Verifica a integridade do GET, se houver alguma discrepância,
@@ -143,9 +138,12 @@ def atualiza_dir(diratual, requisicao, dplataforma):
     '''
     Essa função serve para atualizar um diretório de acordo com a requisição que foi realizada
     '''
-    diretorio = diratual
+    #diretorio = diratual
     arqrequisitado = requisicao
     divisor_caminho = dplataforma
+    j = arqrequisitado.split(divisor_caminho) if arqrequisitado != divisor_caminho else ['','']
+    diretorio = diratual#os.getcwd()+divisor_caminho+'arq'+divisor_caminho.join(j[:-2])
+    print(diretorio,'AAAAAAAAAAAAAAAAA', arqrequisitado)
     
     arquivos_sem_permissao = os.listdir(os.getcwd())
     
@@ -178,8 +176,7 @@ def atualiza_dir(diratual, requisicao, dplataforma):
                                         
                     if arqrequisitado[1:] not in ultimo_dir:                        
                         raise FileNotFoundError
-                    
-                    
+                                        
     return diretorio
     
 
@@ -194,6 +191,7 @@ def servidorWebSimples():
         socket_servidor.listen()
         
         estabelece_plataforma = '\\' if plataforma == 'Windows' else '/'
+        
         print(f'Aguardando requisições...')
         
         diretorio_primario = os.getcwd() + estabelece_plataforma + 'arq' #pasta onde deve ficar os arquivos não intrinsecos ao servidor
@@ -204,6 +202,7 @@ def servidorWebSimples():
         sistema = platform.system()
         versao_sistema = platform.release()
         
+        lista_arquivos_sem_permissao = os.listdir(os.getcwd())#não valida arquivos que estão junto com o servidor
 #-----------------------------------------------------------------------------------------------------------------------------        
         while True:
             socket_cliente, endereco_cliente = socket_servidor.accept()
@@ -224,15 +223,32 @@ def servidorWebSimples():
 #------------------------------------------------------------------------------------------------------------------------------------            
             #as 2 variáveis logo abaixo só tratam a condição do get, no caso, trata arquivo com espaçamento
             arquivo_nao_tratado = dados_do_cabecalho[0].split()[1].replace('/', estabelece_plataforma) if len(requisicao) != 0 else ''
-            arquivo_requisitado = arquivo_nao_tratado.replace('%20',' ') if '%20' in arquivo_nao_tratado else arquivo_nao_tratado
+            zaun = arquivo_nao_tratado.replace(estabelece_plataforma, '#'+estabelece_plataforma)
+            b = zaun.split('#')
             
+            arquivo_requisitado = b[-1].replace('%20',' ') if '%20' in b[-1] else b[-1]
+            print('MISCA MUSCAAAAAAAAAAAAAAA')
+            
+#------------------------------------------------------------------------------------------------------- 
+            if arquivo_requisitado[1:] not in lista_arquivos_sem_permissao:           
+                sp = diretorio_atual.split(estabelece_plataforma)
+                print(sp)
+                jj = estabelece_plataforma+estabelece_plataforma.join(sp[sp.index('arq')+1:])
+                print(jj, 'MINIEEEEE')
+                kk = ''.join(b)
+                print(kk, 'PATETAAAAA')
+                st = kk.replace(jj, '') if kk != estabelece_plataforma else ''
+                print(st,'PATO DONALDD')
+                #st = estabelece_plataforma.join(sp[sp.index('arq')+1:])#posso dar .join
+                print(st)  #Vou ter que dar replace nos elementos da requisição que são iguais a meu diretório atual
+                print(f'Reequisição do arquivo -> {arquivo_requisitado}\n\n')
+#----------------------------------------------------------------------------------------------------------            
             if arquivo_requisitado[1:] == 'voltar':
                 voltar = pop_dir(diretorio_atual)
                 diretorio_atual = join_method(voltar)
                 arquivo_requisitado = estabelece_plataforma#+voltar[-1] if voltar[-1] != 'arq' else "\\"
    
 
-            lista_arquivos_sem_permissao = os.listdir(os.getcwd())#não valida arquivos que estão junto com o servidor
             
             #atualiza o diretório a partir das requisições
             try:
@@ -268,8 +284,6 @@ def servidorWebSimples():
             dia_atual = datetime.datetime.today()
             data_e_horario = dia_atual.now().strftime(formatacao)
             #--
-                
-            print(f'Reequisição do arquivo -> {arquivo_requisitado}\n\n')
 
 
             print('Buscando... ', diretorio_atual+' + '+arquivo_requisitado)
@@ -281,7 +295,8 @@ def servidorWebSimples():
             #essa condição serve para verificar se uma requisição é só uma barra ou uma pasta e então listar o diretório
             if arquivo_requisitado[-1] == estabelece_plataforma or arquivo_v == False and arquivo_requisitado[1:] not in lista_arquivos_sem_permissao:
 
-                atualizar = estabelece_plataforma# if diretorio_atual.split('\\')[-1] != 'arq' else ''''
+                atualizar = estabelece_plataforma# if diretorio_atual.split('\\')[-1] != 'arq' else ''
+                
                 
                 mensagem = (b'HTTP/1.1 200 OK'
                             b'\r\nServer: Local Teste'
@@ -299,8 +314,8 @@ def servidorWebSimples():
                              f'\r\n</head>'
                              f'\r\n<body>'
                              f'\r\n<nav class>'
-                             f'\r\n<a href="{atualizar}"><input type="submit" value="Atualizar lista de arquivos" class = "atualizar"></a>'
-                             f'\r\n<a href="voltar"><input type="submit" value="Voltar Pasta" class = "voltar"></a>'
+                             f'\r\n<a href="{st}"><input type="submit" value="Atualizar lista de arquivos" class = "atualizar"></a>'
+                             f'\r\n<a href="{estabelece_plataforma.join(pop_dir(st))}"><input type="submit" value="Voltar Pasta" class = "voltar"></a>'
                              f'\r\n</nav>'
                              f'\r\n<nav>'
                              f'\r\n<table class="tabela">'
@@ -329,7 +344,7 @@ def servidorWebSimples():
                         tamanho_pasta = f'{bytes_pasta/1024:.2f} KB' if f'{bytes_pasta/(1024**2):.2f}' == '0.00' else f'{bytes_pasta/(1024**2):.2f} MB'
 
                         mensagem += (f'\r\n<tr>'
-                                    f'\r\n<td><h4><a href="{estabelece_plataforma+arquivo}" class="link_arq">{arquivo}\\.</a></h4></td>'
+                                    f'\r\n<td><h4><a href="{st+estabelece_plataforma+arquivo}" class="link_arq">{arquivo}\\.</a></h4></td>'
                                     f'\r\n<td>{tamanho_pasta}</td>'
                                     f'\r\n<td>{modificacao_local}</td>'
                                     f'\r\n</tr>').encode()
@@ -340,7 +355,7 @@ def servidorWebSimples():
                         tamanho_arquivo = f'{bytes_arquivo/1024:.2f} KB' if f'{bytes_arquivo/(1024**2):.2f}' == '0.00' else f'{bytes_arquivo/(1024**2):.2f} MB'
 
                         mensagem += (f'\r\n<tr>'
-                                    f'\r\n<td><h4><a href="{estabelece_plataforma+arquivo}" class="link_arq">{arquivo}</a></h4></td>'
+                                    f'\r\n<td><h4><a href="{st+estabelece_plataforma+arquivo}" class="link_arq">{arquivo}</a></h4></td>'
                                     f'\r\n<td>{tamanho_arquivo}</td>'
                                     f'\r\n<td>{modificacao_local}</td>'
                                     f'\r\n</tr>').encode()
@@ -383,20 +398,45 @@ def servidorWebSimples():
                     
                     if extensao == None:
                         extensao = "text/txt"
-                
-                    bits = str(len(caract_escritos))
+                        retorno = estabelece_plataforma
+                        mensagem = (b'HTTP/1.1 200 OK'
+                                    b'\r\nServer: Local Teste'
+                                    b'\r\nSystem: ' + sistema.encode() + versao_sistema.encode() +
+                                    b'\r\nDate: ' + data_e_horario.encode() + b' UTC'
+                                    b'\r\n' + dados_do_cabecalho[2].encode() +
+                                    b'\r\nAllow: ' + dados_do_cabecalho[0].split()[0].encode() +
+                                    b'\r\nContent-Type: text/html; charset=utf-8\r\n\r\n')
+                        
+                        mensagem += (f'<!DOCTYPE html>'
+                                    f'\r\n<html lang="pt-br">'
+                                    f'\r\n<head>'
+                                    f'\r\n<meta name = "viewport" content = "width=device-wwidth, initial-scale=1.0">'
+                                    f'\r\n<title>Olá, essa e uma página de testes</title>'
+                                    f'\r\n<link rel="icon" type="image/x-icon" href="favicon.ico">'
+                                    f'\r\n<link rel="stylesheet" href="./styleProjRedes.css">'
+                                    f'\r\n</head>'
+                                    f'\r\n<body>'
+                                    f'\r\n<nav>'
+                                    f'\r\n<a href="ler{st+arquivo_requisitado}"><input type="submit" value="Ler arquivo codificado em .TXT" class = "leitura"></a>'
+                                    f'\r\n<a href="{st+arquivo_requisitado}" download><input type="submit" value="Download" class = "download"></a>'
+                                    f'\r\n<a href="{st+retorno}"><input type="submit" value="Retornar" class = "retornar"></a>'
+                                    f'\r\n<nav>').encode()
+                        
+                        print(mensagem)
+                    else:
+                        bits = str(len(caract_escritos))
 
-                    #cabecalho
-                    mensagem = (b'HTTP/1.1 200 OK'
-                                b'\r\nServer: Local Teste'
-                                b'\r\nSystem: ' + sistema.encode() + versao_sistema.encode() +
-                                b'\r\nDate: ' + data_e_horario.encode() + b' UTC'
-                                b'\r\n' + dados_do_cabecalho[2].encode() +
-                                b'\r\nAllow: ' + dados_do_cabecalho[0].split()[0].encode() +
-                                b'\r\nContent-Length: ' + bits.encode() +
-                                b'\r\nContent-Type: ' + extensao.encode() + b'; charset=utf-8\r\n\r\n')
-                   
-                    mensagem += caract_escritos
+                        #cabecalho
+                        mensagem = (b'HTTP/1.1 200 OK'
+                                    b'\r\nServer: Local Teste'
+                                    b'\r\nSystem: ' + sistema.encode() + versao_sistema.encode() +
+                                    b'\r\nDate: ' + data_e_horario.encode() + b' UTC'
+                                    b'\r\n' + dados_do_cabecalho[2].encode() +
+                                    b'\r\nAllow: ' + dados_do_cabecalho[0].split()[0].encode() +
+                                    b'\r\nContent-Length: ' + bits.encode() +
+                                    b'\r\nContent-Type: ' + extensao.encode() + b'; charset=utf-8\r\n\r\n')
+                        
+                        mensagem += caract_escritos
 
                     socket_cliente.send(mensagem)
                     

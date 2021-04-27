@@ -52,6 +52,10 @@ tr{
     float: right;
 }
 
+.retornar {
+    float: right;
+}
+
 .tabela {
     background-color: rgb(145, 141, 141);/* achei lindona a cor -> #aa3333 */
     border: 1.1px solid rgb(219,219,219);
@@ -92,6 +96,46 @@ tr{
     font-weight: bold;
     text-align: center;
 }
+
+.download {
+    display: inline-block;
+    text-align: center;
+	text-transform: uppercase; 
+    font-weight: bold;
+    font-size: 16px;
+    min-width: 40px;
+	position: relative;
+	padding: 7px 80px;
+	margin: 10px 0px;
+	font-weight: 550;
+	transition: 0.5s;
+    border: 2px solid;
+    color: black;
+}
+
+.leitura {
+    display: inline-block;
+    text-align: center;
+	text-transform: uppercase; 
+    font-weight: bold;
+    font-size: 16px;
+    min-width: 40px;
+	position: relative;
+	padding: 7px 80px;
+	margin: 10px 0px;
+	font-weight: 550;
+	transition: 0.5s;
+    border: 2px solid;
+    color: black;
+}
+
+@media screen and (max-width: 960px){
+    #redim {
+        position: relative;
+        width: 100%;
+    }
+}
+
 
 @media screen and (max-width: 768px){
     * {
