@@ -23,12 +23,12 @@ nav input {
     display: inline-block;
     text-align: center;
 	text-transform: uppercase; 
-    font-weight: bold;
     font-size: 16px;
     min-width: 40px;
 	position: relative;
 	padding: 7px 80px;
 	margin: 10px 0px;
+    border-radius: 3px;
 	font-weight: 550;
 	transition: 0.5s;
     border: 2px solid;
@@ -129,11 +129,20 @@ tr{
     color: black;
 }
 
-@media screen and (max-width: 960px){
-    #redim {
-        position: relative;
-        width: 100%;
+@media screen and (max-width: 985px){
+    .posicao{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        min-height: 35vh;
     }
+    .posicao input {
+        width: 350px;
+        min-width: 40px;
+        position: relative;
+    }
+
 }
 
 
@@ -142,10 +151,7 @@ tr{
         font-size: 12px;
     }
 
-    nav {
-        flex-direction: row;
-        justify-content: space-around;
-    }
+
     .tabela thead{
         display: none;
     }
